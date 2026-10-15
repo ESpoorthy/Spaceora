@@ -1,0 +1,152 @@
+================================================================================
+M0 BACKEND FOUNDATION — BUILD AND TEST RESULTS
+================================================================================
+
+Test command : cd backend && bash mvnw test -Dspring.profiles.active=test
+Result       : BUILD SUCCESS
+Tests run    : 1, Failures: 0, Errors: 0, Skipped: 0
+Finished at  : 2026-10-15T20:38:42+05:30
+Total time   : 17.516 s
+
+Java runtime       : OpenJDK 25.0.1 (Eclipse Temurin)
+Maven wrapper      : 3.9.6 (apache-maven-3.9.6)
+Compiler source    : Java 21
+Compiler target    : Java 21
+Spring Boot        : 3.2.5
+Lombok             : 1.18.40 (upgraded from BOM default 1.18.32 — required for JDK 25 annotation processor support)
+MapStruct          : 1.5.5.Final
+Flyway             : 9.22.3 (via Spring Boot 3.2.5 BOM; PostgreSQL support is built into flyway-core in v9.x, flyway-database-postgresql is a 10.x module and was removed)
+
+================================================================================
+FILES CREATED
+================================================================================
+
+backend/pom.xml
+backend/mvnw                                           (downloaded from takari/maven-wrapper, chmod +x)
+backend/mvnw.cmd
+backend/.mvn/wrapper/maven-wrapper.properties
+backend/src/main/java/com/spaceora/SpaceoraApplication.java
+backend/src/main/resources/application.yml
+backend/src/test/resources/application-test.yml
+backend/src/main/resources/db/migration/V1__create_users.sql
+backend/src/main/resources/db/migration/V2__create_spaces.sql
+backend/src/main/resources/db/migration/V3__create_availability.sql
+backend/src/main/resources/db/migration/V4__create_reservations.sql
+backend/src/main/resources/db/migration/V5__add_indexes.sql
+backend/src/main/resources/db/migration/V6__seed_dev_data.sql
+backend/src/main/java/com/spaceora/config/JwtProperties.java
+backend/src/main/java/com/spaceora/config/SecurityConfig.java
+backend/src/main/java/com/spaceora/config/OpenApiConfig.java
+backend/src/main/java/com/spaceora/exception/GlobalExceptionHandler.java
+backend/src/main/java/com/spaceora/exception/ResourceNotFoundException.java
+backend/src/main/java/com/spaceora/exception/BookingConflictException.java
+backend/src/main/java/com/spaceora/exception/BookingValidationException.java
+backend/src/main/java/com/spaceora/exception/InvalidStatusTransitionException.java
+backend/src/main/java/com/spaceora/auth/controller/package-info.java
+backend/src/main/java/com/spaceora/auth/dto/package-info.java
+backend/src/main/java/com/spaceora/auth/service/package-info.java
+backend/src/main/java/com/spaceora/auth/filter/package-info.java
+backend/src/main/java/com/spaceora/user/controller/package-info.java
+backend/src/main/java/com/spaceora/user/dto/package-info.java
+backend/src/main/java/com/spaceora/user/entity/package-info.java
+backend/src/main/java/com/spaceora/user/repository/package-info.java
+backend/src/main/java/com/spaceora/space/controller/package-info.java
+backend/src/main/java/com/spaceora/space/dto/package-info.java
+backend/src/main/java/com/spaceora/space/entity/package-info.java
+backend/src/main/java/com/spaceora/space/repository/package-info.java
+backend/src/main/java/com/spaceora/availability/controller/package-info.java
+backend/src/main/java/com/spaceora/availability/dto/package-info.java
+backend/src/main/java/com/spaceora/availability/entity/package-info.java
+backend/src/main/java/com/spaceora/availability/repository/package-info.java
+backend/src/main/java/com/spaceora/availability/service/package-info.java
+backend/src/main/java/com/spaceora/reservation/controller/package-info.java
+backend/src/main/java/com/spaceora/reservation/dto/package-info.java
+backend/src/main/java/com/spaceora/reservation/entity/package-info.java
+backend/src/main/java/com/spaceora/reservation/repository/package-info.java
+backend/src/main/java/com/spaceora/reservation/service/package-info.java
+backend/src/main/java/com/spaceora/admin/controller/package-info.java
+backend/src/main/java/com/spaceora/admin/dto/package-info.java
+backend/src/test/java/com/spaceora/SpaceoraApplicationTests.java
+backend/.agents/m0-backend-test-output.txt   (this file)
+.env.example
+docker-compose.yml
+
+================================================================================
+ENVIRONMENT NOTES
+================================================================================
+
+Docker not available : docker-compose.yml created but NOT executed.
+PostgreSQL not running : Flyway SQL files are syntactically correct but NOT executed against a live DB.
+Tests use H2 in-memory (Flyway disabled) via application-test.yml with @ActiveProfiles("test").
+.gitignore already covers: .env, node_modules/, target/, dist/, .vite/
+
+================================================================================
+M0 ACCEPTANCE CRITERIA STATUS
+================================================================================
+
+[PASS] Spring Boot Maven project created under backend/
+[PASS] PostgreSQL configured via environment variables (DB_URL, DB_USERNAME, DB_PASSWORD)
+[PASS] .env.example written with placeholders only (no real credentials)
+[PASS] docker-compose.yml created for local PostgreSQL dev (not executed — Docker unavailable)
+[PASS] Flyway migration support configured; V1-V6 migration scripts written
+[PASS] application.yml profiles configured; application-test.yml for H2 test profile
+[PASS] Package structure established: auth, user, space, availability, reservation, admin, config, exception
+[PASS] Health-check support via Spring Boot Actuator (health, info endpoints exposed)
+[PASS] Spring Security minimal config bean (permits all for M0; JWT enforcement planned for M1)
+[PASS] OpenAPI/Swagger configured (springdoc-openapi-starter-webmvc-ui)
+[PASS] JwtProperties bound via @Component @ConfigurationProperties(prefix = "jwt")
+[PASS] Smoke test (contextLoads) passes with H2 — no PostgreSQL required
+[PASS] Secrets not committed (.env.example has placeholders only)
+[SKIP] Docker Compose PostgreSQL start — Docker not available
+[SKIP] Flyway migration execution against live DB — PostgreSQL not running
+
+================================================================================
+M0 BACKEND FOUNDATION — SUMMARY
+================================================================================
+
+Test command: cd backend && bash mvnw test -Dspring.profiles.active=test
+Result:       BUILD SUCCESS — Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
+
+Java runtime: OpenJDK 25 (Temurin); Maven wrapper: 3.9.6
+Compiler source/target: Java 21
+Spring Boot: 3.2.5
+Lombok: 1.18.40 (upgraded from 1.18.32 — required for JDK 25 annotation processor support)
+MapStruct: 1.5.5.Final
+Flyway: 9.22.3 (via Spring Boot BOM; PostgreSQL support built into flyway-core in v9.x)
+
+Files created:
+  backend/pom.xml
+  backend/mvnw (chmod +x)
+  backend/mvnw.cmd
+  backend/.mvn/wrapper/maven-wrapper.properties
+  backend/src/main/java/com/spaceora/SpaceoraApplication.java
+  backend/src/main/resources/application.yml
+  backend/src/test/resources/appl
+================================================================================
+M0 BACKEsrcM0 BACKEND FOUNDATION — SUMMARY
+=============================================/d================================it
+Test command: cd backend && bash mvnw test -Dspring.profiles.active=test
+ResulackResult:       BUILD SUCCESS — Tests run: 1, Failures: 0, Errors: 0, Sai
+Java runtime: OpenJDK 25 (Temurin); Maven wrapper: 3.9.6
+Compiler source/targeeorCompiler source/target: Java 21
+Spring Boot: 3.2.5
+Lomb/sSpring Boot: 3.2.5
+Lombok: 1.1jaLombok:ckend/src/maMapStruct: 1.5.5.Final
+Flyway: 9.22.3 (via Spring Boot BOM; PostgreSQL support built into fonFlyway: 9.22.3 (via Ser
+Files created:
+  backend/pom.xml
+  backend/mvnw (chmod +x)
+  backend/mvnw.cmn.java
+  backend/src/main/j  backend/mvnw (/e  backend/mvnw.cmd
+  bacEx  backend/.mvn/wrck  backend/src/main/java/com/spaceora/SpaceoraAng  backend/src/main/resources/application.yml
+  backend/sceora/  backend/src/test/resources/appl
+=========ja================================h,M0 BACKEsrcM0 BACKEND FOUNDATION — SUMMARY
+==================================/j===========================================avTest command: cd backend && bash mvnw test -Dspring.profiles.active=test
+ResulacleResulackResult:       BUILD SUCCESS — Tests run: 1, Failures: 0, ErrongJava runtime: OpenJDK 25 (Temurin); Maven wrapper: 3.9.6
+Compiler source/targeeos Compiler source/targeeorCompiler source/target: Java 21.ySpring Boot: 3.2.5
+Lomb/sSpring Boot: 3.2.5
+Lombok: 1., Lombet/, dist/, .viLombok: 1.1jaLosummary apFlyway: cd /Users/saispoorthyeturu/Spaceora && git status
+git -C /Users/saispoorthyeturu/Spaceora status 2>&1
+export GIT_DIR=/Users/saispoorthyeturu/Spaceora/.git && git --work-tree=/Users/saispoorthyeturu/Spaceora status 2>&1 | head -50
+git status /Users/saispoorthyeturu/Spaceora 2>&1 || true
+printf 'git status\n'
