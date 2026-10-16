@@ -87,13 +87,13 @@ public class UserService implements UserDetailsService {
 
     public UserProfileDto getProfile(String email) {
         User user = userRepository.findByEmail(email.toLowerCase())
-                .orElseThrow(() -> new ResourceNotFoundException("User not found: " + email));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
         return UserProfileDto.from(user);
     }
 
     public UserProfileDto updateProfile(String email, UpdateProfileRequestDto dto) {
         User user = userRepository.findByEmail(email.toLowerCase())
-                .orElseThrow(() -> new ResourceNotFoundException("User not found: " + email));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         if (dto.firstName() != null) {
             user.setFirstName(dto.firstName());

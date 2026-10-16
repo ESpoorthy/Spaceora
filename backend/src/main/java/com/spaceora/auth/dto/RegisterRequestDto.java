@@ -13,6 +13,8 @@ public record RegisterRequestDto(
                 message = "must be a valid email address") String email,
         @NotBlank
         @Pattern(
+                // Policy per docs/tasks.md: min 8 chars, at least one uppercase, lowercase, digit.
+                // Special characters are accepted but not required by the documented MVP policy.
                 regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{8,}$",
                 message = "Password must be at least 8 characters with uppercase, lowercase and digit"
         )
