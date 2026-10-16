@@ -8,7 +8,9 @@ import jakarta.validation.constraints.Pattern;
 public record RegisterRequestDto(
         @NotBlank String firstName,
         @NotBlank String lastName,
-        @NotBlank @Email String email,
+        @NotBlank @Email(regexp = "^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$",
+                flags = Pattern.Flag.CASE_INSENSITIVE,
+                message = "must be a valid email address") String email,
         @NotBlank
         @Pattern(
                 regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{8,}$",

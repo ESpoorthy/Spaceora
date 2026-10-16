@@ -70,6 +70,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 return;
             }
 
+            // Reject tokens carrying unrecognised role values so only known roles
+            // can enter the SecurityContext.
+            try {
+                Role.valueOf(roleName);
+            } catch (IllegalArgumentException e) {
+                log.debug("JWT contains unrecognised role claim: {}", roleName);
+                filterChain.doFilter(request, response);
+                return;
+            }
+
             List<SimpleGrantedAuthority> authorities =
                     List.of(new SimpleGrantedAuthority("ROLE_" + roleName));
 
