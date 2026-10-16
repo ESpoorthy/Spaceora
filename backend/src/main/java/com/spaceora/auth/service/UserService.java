@@ -48,6 +48,9 @@ public class UserService implements UserDetailsService {
             throw new AuthorizationException("Cannot self-assign ADMIN role");
         }
 
+        // OWNER self-registration is intentionally permitted at the public endpoint.
+        // See docs/api-contract.md: accepted role values at registration are CUSTOMER and OWNER.
+        // ADMIN can only be granted by an existing ADMIN via PUT /api/admin/users/{id}/role.
         Role assignedRole = (dto.role() == null) ? Role.CUSTOMER : dto.role();
 
         User user = User.builder()

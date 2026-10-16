@@ -19,7 +19,9 @@ spring:
     locations: classpath:db/migration
     baseline-on-migrate: false
 jwt:
-  secret: ${JWT_SECRET:dev-secret-change-in-production-must-be-at-least-256-bits}
+  # JWT_SECRET must be set in the environment. No default is provided so the
+  # application fails fast at startup rather than launching with a known secret.
+  secret: ${JWT_SECRET}
   expiry-seconds: ${JWT_EXPIRY_SECONDS:86400}
 server:
   port: 8080

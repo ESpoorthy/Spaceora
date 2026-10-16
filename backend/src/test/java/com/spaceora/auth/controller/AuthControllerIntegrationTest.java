@@ -18,6 +18,18 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+/**
+ * Integration tests for the authentication and user-profile endpoints.
+ *
+ * <p><b>Test profile note:</b> These tests run against an H2 in-memory database
+ * (application-test.yml) with Flyway disabled and {@code ddl-auto=create-drop}.
+ * The schema is generated from Hibernate entity annotations rather than the
+ * V1–V6 migration scripts, so column-name mismatches in migrations would not
+ * surface here. Migration correctness is covered by the M0 PostgreSQL integration
+ * check executed against the Docker Compose database. Adding Testcontainers-based
+ * tests that run the real migrations against PostgreSQL is deferred to a future
+ * milestone (out of scope for M1).
+ */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
