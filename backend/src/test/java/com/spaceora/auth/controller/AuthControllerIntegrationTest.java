@@ -234,10 +234,12 @@ class AuthControllerIntegrationTest {
         assertThat(body.get("firstName")).isEqualTo("Updated");
     }
 
-    // 13. protectedEndpoint_noToken_returns401
+    // 13. updateProfile_withoutToken_returns401
     @Test
-    void protectedEndpoint_noToken_returns401() throws Exception {
-        mockMvc.perform(get("/api/users/me"))
+    void updateProfile_withoutToken_returns401() throws Exception {
+        mockMvc.perform(put("/api/users/me")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(Map.of("firstName", "Hacker"))))
                 .andExpect(status().isUnauthorized());
     }
 }

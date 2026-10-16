@@ -44,6 +44,7 @@ class FlywayMigrationIntegrationTest {
             dockerAvailable = false;
         }
         Assumptions.assumeTrue(dockerAvailable,
+                // To run: start Docker Desktop, then: cd backend && bash mvnw test -Dtest=FlywayMigrationIntegrationTest
                 "Skipping Flyway migration test — Docker daemon is not reachable");
 
         postgres = new PostgreSQLContainer<>("postgres:16-alpine")
