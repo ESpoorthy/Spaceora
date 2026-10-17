@@ -165,7 +165,7 @@ public class SpaceService {
 
     private User loadUserByEmail(String email) {
         return userRepository.findByEmail(email)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found: " + email));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
     }
 
     private Space loadSpaceById(Long id) {

@@ -282,4 +282,56 @@ class SpaceControllerIntegrationTest {
                         .header("Authorization", "Bearer " + ownerToken))
                 .andExpect(status().isNotFound());
     }
+
+    // (n) GET /api/spaces/owner/me with OWNER JWT returns 200 and own spaces
+    @Test
+    void getOwnerSpaces_asOwner_returns200() throws Exception {
+        // Create a space as this owner
+        mockMvc.perform(post("/api/spaces")
+                        .header("Authorization", "Bearer " + ownerToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(buildSpacePayload())))
+                .andExpect(status().isCreated());
+
+        MvcResult result = mockMvc.perform(get("/api/spaces/owner/me")
+                        .header("Authorization", "Bearer " + ownerToken))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        // Response should be a JSON array with at least one entry
+        Object body = objectMapper.readValue(result.getResponse().getContentAsString(), Object.class);
+        assertThat(body).isInstanceOf(java.util.List.class);
+        assertThat((java.util.List<?>) body).isNotEmpty();
+    }
+
+    // (o) GET /api/spaces/owner/me with CUSTOMER JWT returns 403
+    @Test
+    void getOwnerSpaces_asCustomer_returns403() throws Exception {
+        mockMvc.perform(get("/api/spaces/owner/me")
+                        .header("Authorization", "Bearer " + customerToken))
+                .andExpect(status().isForbidden());
+    }
+
+    // (p) GET /api/spaces/owner/me with no token returns 401 or 403
+    // The security filter chain permits all GET /api/spaces/**, so an anonymous
+    // request reaches the @PreAuthorize guard which returns 403 (Access Denied).
+    @Test
+    void getOwnerSpaces_noToken_returns403() throws Exception {
+        mockMvc.perform(get("/api/spaces/owner/me"))
+                .andExpect(status().isForbidden());
+    }
+
+    // (q) GET /api/spaces with an invalid sort field returns 400
+    @Test
+    void searchSpaces_invalidSortField_returns400() throws Exception {
+        mockMvc.perform(get("/api/spaces").param("sort", "injectedField,asc"))
+                .andExpect(status().isBadRequest());
+    }
+
+    // (r) GET /api/spaces with a valid sort field (hourlyRate) returns 200
+    @Test
+    void searchSpaces_validSortField_returns200() throws Exception {
+        mockMvc.perform(get("/api/spaces").param("sort", "hourlyRate,desc"))
+                .andExpect(status().isOk());
+    }
 }

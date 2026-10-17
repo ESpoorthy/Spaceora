@@ -18,10 +18,15 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
+import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/api/spaces")
 public class SpaceController {
+
+    private static final Set<String> ALLOWED_SORT_FIELDS =
+            Set.of("id", "name", "hourlyRate", "capacity", "createdAt");
 
     private final SpaceService spaceService;
 
@@ -54,22 +59,28 @@ public class SpaceController {
             }
         }
 
-        // Parse sort as 'field,direction', defaulting to Sort.by(ASC, "id")
+        // Parse sort as 'field,direction'; validate field against whitelist
         Sort parsedSort;
-        try {
-            String[] parts = sort.split(",", 2);
-            String field = parts[0].trim();
-            Sort.Direction direction = (parts.length > 1 && parts[1].trim().equalsIgnoreCase("desc"))
-                    ? Sort.Direction.DESC
-                    : Sort.Direction.ASC;
-            parsedSort = Sort.by(direction, field);
-        } catch (Exception e) {
-            parsedSort = Sort.by(Sort.Direction.ASC, "id");
+        String[] sortParts = sort.split(",", 2);
+        String sortField = sortParts[0].trim();
+        if (!ALLOWED_SORT_FIELDS.contains(sortField)) {
+            return ResponseEntity.badRequest().body("Invalid sort field: " + sortField
+                    + ". Allowed: " + ALLOWED_SORT_FIELDS);
         }
+        Sort.Direction sortDirection = (sortParts.length > 1 && sortParts[1].trim().equalsIgnoreCase("desc"))
+                ? Sort.Direction.DESC
+                : Sort.Direction.ASC;
+        parsedSort = Sort.by(sortDirection, sortField);
 
         Pageable pageable = PageRequest.of(page, cappedSize, parsedSort);
         Page<SpaceSummaryDto> result = spaceService.search(city, spaceType, minCapacity, maxCapacity, minPrice, maxPrice, pageable);
         return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("/owner/me")
+    @PreAuthorize("hasRole('OWNER')")
+    public ResponseEntity<List<SpaceDto>> getOwnerSpaces(Authentication auth) {
+        return ResponseEntity.ok(spaceService.getOwnerSpaces(auth.getName()));
     }
 
     @GetMapping("/{id}")
