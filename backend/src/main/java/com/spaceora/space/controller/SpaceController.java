@@ -1,0 +1,106 @@
+package com.spaceora.space.controller;
+
+import com.spaceora.space.dto.SpaceDto;
+import com.spaceora.space.dto.SpaceRequestDto;
+import com.spaceora.space.dto.SpaceSummaryDto;
+import com.spaceora.space.dto.SpaceUpdateRequestDto;
+import com.spaceora.space.entity.SpaceType;
+import com.spaceora.space.service.SpaceService;
+import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.*;
+
+import java.math.BigDecimal;
+
+@RestController
+@RequestMapping("/api/spaces")
+public class SpaceController {
+
+    private final SpaceService spaceService;
+
+    public SpaceController(SpaceService spaceService) {
+        this.spaceService = spaceService;
+    }
+
+    @GetMapping
+    public ResponseEntity<?> searchSpaces(
+            @RequestParam(required = false) String city,
+            @RequestParam(required = false) String type,
+            @RequestParam(required = false) Integer minCapacity,
+            @RequestParam(required = false) Integer maxCapacity,
+            @RequestParam(required = false) BigDecimal minPrice,
+            @RequestParam(required = false) BigDecimal maxPrice,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size,
+            @RequestParam(defaultValue = "id,asc") String sort) {
+
+        // Cap size at 100
+        int cappedSize = Math.min(size, 100);
+
+        // Parse type string to SpaceType
+        SpaceType spaceType = null;
+        if (type != null && !type.isBlank()) {
+            try {
+                spaceType = SpaceType.valueOf(type.toUpperCase());
+            } catch (IllegalArgumentException e) {
+                return ResponseEntity.badRequest().body("Invalid space type: " + type);
+            }
+        }
+
+        // Parse sort as 'field,direction', defaulting to Sort.by(ASC, "id")
+        Sort parsedSort;
+        try {
+            String[] parts = sort.split(",", 2);
+            String field = parts[0].trim();
+            Sort.Direction direction = (parts.length > 1 && parts[1].trim().equalsIgnoreCase("desc"))
+                    ? Sort.Direction.DESC
+                    : Sort.Direction.ASC;
+            parsedSort = Sort.by(direction, field);
+        } catch (Exception e) {
+            parsedSort = Sort.by(Sort.Direction.ASC, "id");
+        }
+
+        Pageable pageable = PageRequest.of(page, cappedSize, parsedSort);
+        Page<SpaceSummaryDto> result = spaceService.search(city, spaceType, minCapacity, maxCapacity, minPrice, maxPrice, pageable);
+        return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<SpaceDto> getById(@PathVariable Long id) {
+        return ResponseEntity.ok(spaceService.getById(id));
+    }
+
+    @PostMapping
+    @PreAuthorize("hasRole('OWNER')")
+    public ResponseEntity<SpaceDto> createSpace(
+            @Valid @RequestBody SpaceRequestDto dto,
+            Authentication auth) {
+        SpaceDto created = spaceService.create(dto, auth.getName());
+        return ResponseEntity.status(HttpStatus.CREATED).body(created);
+    }
+
+    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('OWNER')")
+    public ResponseEntity<SpaceDto> updateSpace(
+            @PathVariable Long id,
+            @Valid @RequestBody SpaceUpdateRequestDto dto,
+            Authentication auth) {
+        return ResponseEntity.ok(spaceService.update(id, dto, auth.getName()));
+    }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('OWNER') or hasRole('ADMIN')")
+    public ResponseEntity<Void> deleteSpace(
+            @PathVariable Long id,
+            Authentication auth) {
+        spaceService.delete(id, auth.getName());
+        return ResponseEntity.noContent().build();
+    }
+}
