@@ -1,0 +1,6 @@
+import { Link } from 'react-router-dom'
+import { SiteLayout } from '../components/SiteLayout'
+import { FeatureNotice } from '../components/FeatureNotice'
+
+function MyBookingsPage(){return <SiteLayout><main className="account-page container-fluid"><div className="breadcrumb-line"><Link to="/">Home</Link><span>›</span><span>My bookings</span></div><div className="account-heading"><div><span className="eyebrow">YOUR SPACEORA ACCOUNT</span><h1>My bookings</h1><p>All your workspace plans, together in one place.</p></div><Link className="btn btn-primary" to="/explore">Find a space</Link></div><div className="booking-tabs" role="tablist"><button className="active" role="tab" aria-selected="true">Upcoming</button><button role="tab" aria-selected="false" disabled>Past bookings</button></div><section className="booking-empty surface"><div className="empty-illustration">▤</div><h2>Your bookings will show up here.</h2><p>The reservation API is not available yet, so Spaceora can’t create or load saved bookings. No booking has been made.</p><FeatureNotice>Booking records will appear here when the reservation endpoints are connected.</FeatureNotice><Link className="btn btn-primary mt-3" to="/explore">Explore workspaces</Link></section></main></SiteLayout>}
+export default MyBookingsPage

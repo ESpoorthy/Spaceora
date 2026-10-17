@@ -1,9 +1,5 @@
-function NotFoundPage() {
-  return (
-    <div className="container mt-5">
-      <h1>404 — Page Not Found</h1>
-      <p>The page you are looking for does not exist.</p>
-    </div>
-  )
-}
+import { Link } from 'react-router-dom'
+import { SiteLayout } from '../components/SiteLayout'
+
+function NotFoundPage() { return <SiteLayout><main className="empty-state"><span>404</span><h1>That space doesn’t exist.</h1><p>The page may have moved. Let’s find a better place to land.</p><Link className="btn btn-primary" to="/explore">Explore spaces</Link></main></SiteLayout> }
 export default NotFoundPage

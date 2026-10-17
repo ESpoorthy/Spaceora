@@ -1,0 +1,23 @@
+// Replace this module with the /api/spaces service when the backend M2 controllers ship.
+// These records are design-development fixtures only; they are never presented as saved bookings.
+export const spaces = [
+  { id: 'atrium', name: 'The Atrium meeting room', type: 'MEETING_ROOM', city: 'Hyderabad', area: 'HITEC City', address: 'Madhapur, Hyderabad', price: 800, capacity: 8, image: '/images/space-13.jpeg', image2: '/images/space-15.png', image3: '/images/space-18.png', amenities: ['Wi-Fi', 'Whiteboard', 'Projector'], description: 'A bright, thoughtful room for focused work and productive conversations. Floor-to-ceiling windows bring the city into the room while a generous meeting table keeps teams connected.', badge: 'SPACEORA PICK' },
+  { id: 'daylight', name: 'Daylight coworking studio', type: 'COWORKING', city: 'Bengaluru', area: 'Indiranagar', address: '12th Main, Indiranagar', price: 250, capacity: 12, image: '/images/space-02.png', image2: '/images/space-04.png', image3: '/images/space-06.png', amenities: ['Wi-Fi', 'Air conditioning', 'Coffee'], description: 'An airy coworking studio with quiet corners, shared tables and plenty of natural light for a full day of focused work.', badge: 'COWORKING DESK' },
+  { id: 'quiet-chapter', name: 'The Quiet Chapter', type: 'STUDY_ROOM', city: 'Pune', area: 'Baner', address: 'Baner Road, Pune', price: 300, capacity: 4, image: '/images/space-09.png', image2: '/images/space-08.png', image3: '/images/space-10.jpeg', amenities: ['Wi-Fi', 'Quiet zone', 'Coffee'], description: 'A calm reading room for deep focus, study sessions and time away from the noise of the day.', badge: 'STUDY ROOM' },
+  { id: 'garden-studio', name: 'Garden view studio', type: 'COWORKING', city: 'Hyderabad', area: 'Jubilee Hills', address: 'Jubilee Hills, Hyderabad', price: 400, capacity: 10, image: '/images/space-08.png', image2: '/images/space-12.jpeg', image3: '/images/space-07.jpeg', amenities: ['Wi-Fi', 'Garden', 'Coffee'], description: 'A relaxed light-filled studio overlooking a green courtyard, with room to spread out and get things done.', badge: 'COWORKING DESK' },
+  { id: 'focus-hall', name: 'Open table workspace', type: 'MEETING_ROOM', city: 'Bengaluru', area: 'Koramangala', address: 'Koramangala, Bengaluru', price: 550, capacity: 16, image: '/images/space-04.png', image2: '/images/space-05.jpeg', image3: '/images/space-02.png', amenities: ['Wi-Fi', 'Whiteboard', 'Air conditioning'], description: 'A flexible open workspace that makes team sessions feel collaborative and easy.', badge: 'MEETING ROOM' },
+  { id: 'reading-room', name: 'The Reading Room', type: 'STUDY_ROOM', city: 'Pune', area: 'Viman Nagar', address: 'Viman Nagar, Pune', price: 350, capacity: 6, image: '/images/space-10.jpeg', image2: '/images/space-09.png', image3: '/images/space-11.jpeg', amenities: ['Wi-Fi', 'Quiet zone', 'Coffee'], description: 'A tucked-away library room for uninterrupted study and small group work.', badge: 'STUDY ROOM' },
+  { id: 'commons', name: 'The Commons team desks', type: 'COWORKING', city: 'Hyderabad', area: 'Gachibowli', address: 'Gachibowli, Hyderabad', price: 2000, capacity: 8, image: '/images/space-15.png', image2: '/images/space-14.png', image3: '/images/space-13.jpeg', amenities: ['Wi-Fi', 'Air conditioning'], description: 'Roomy shared tables and windows that bring the outdoors into your working day.', badge: 'COWORKING DESKS' },
+  { id: 'chapter-eight', name: 'Chapter Eight study suite', type: 'STUDY_ROOM', city: 'Hyderabad', area: 'Jubilee Hills', address: 'Jubilee Hills, Hyderabad', price: 600, capacity: 8, image: '/images/space-16.png', image2: '/images/space-17.jpeg', image3: '/images/space-09.png', amenities: ['Wi-Fi', 'Whiteboard', 'Air conditioning'], description: 'A quiet study suite with a wide view, generous tables and a little room to breathe.', badge: 'STUDY ROOM' },
+  { id: 'forum', name: 'The Forum learning space', type: 'TRAINING_HALL', city: 'Hyderabad', area: 'Madhapur', address: 'Madhapur, Hyderabad', price: 1500, capacity: 24, image: '/images/space-18.png', image2: '/images/space-20.jpeg', image3: '/images/space-15.png', amenities: ['Wi-Fi', 'Air conditioning', 'Projector'], description: 'A bright training room with flexible seating for workshops, presentations and team learning.', badge: 'TRAINING HALL' },
+]
+
+export const featuredSpaces = ['atrium', 'daylight', 'quiet-chapter'].map((id) => spaces.find((space) => space.id === id))
+
+export const spaceTypes = [
+  { value: '', label: 'All spaces' },
+  { value: 'COWORKING', label: 'Coworking desks' },
+  { value: 'STUDY_ROOM', label: 'Study rooms' },
+  { value: 'MEETING_ROOM', label: 'Meeting rooms' },
+  { value: 'TRAINING_HALL', label: 'Training halls' },
+]
