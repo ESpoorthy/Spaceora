@@ -1,16 +1,28 @@
-# React + Vite
+# Spaceora frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+Responsive React + Vite app for the Spaceora workspace marketplace. UI styling follows the official Figma file (`jmILFgP2XqbqcjRCrXiA6W`) using Bootstrap 5 and custom design tokens.
 
-Currently, two official plugins are available:
+## Run locally
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+```sh
+npm ci
+cp .env.example .env.local
+npm run dev
+```
 
-## React Compiler
+Set `VITE_API_BASE_URL` to the Spring Boot server origin (defaults to `http://localhost:8080`).
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Checks
 
-## Expanding the Oxlint configuration
+```sh
+npm run lint
+npm run build
+```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+There is no frontend test script in this scaffold.
+
+## Backend status
+
+Authentication/profile calls use the documented `POST /api/auth/register`, `POST /api/auth/login`, `GET /api/users/me` and `PUT /api/users/me` DTOs. JWTs are sent as Bearer tokens; “Remember me” chooses local storage or session-only storage. A 401 clears the session.
+
+The current backend has no space, availability or reservation controllers. `src/api/marketplaceService.js` defines replaceable interfaces for the documented routes. The Explore and detail screens use `src/data/spaces.js` development fixtures; availability and booking pages explicitly show that no backend request was saved. Owner screens use an empty local fixture and do not claim listing or booking persistence. Saved-space IDs are a non-sensitive local preference only.
