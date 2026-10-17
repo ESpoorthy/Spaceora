@@ -29,6 +29,7 @@ public class AvailabilitySchedule {
     private Long spaceId;
 
     @Column(name = "day_of_week", nullable = false)
+    @org.hibernate.annotations.JdbcTypeCode(org.hibernate.type.SqlTypes.SMALLINT)
     private int dayOfWeek;   // 0=Mon … 6=Sun
 
     @Column(name = "open_time", nullable = false)
