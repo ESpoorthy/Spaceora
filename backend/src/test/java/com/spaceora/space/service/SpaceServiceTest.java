@@ -1,5 +1,6 @@
 package com.spaceora.space.service;
 
+import com.spaceora.availability.repository.AvailabilityScheduleRepository;
 import com.spaceora.exception.AuthorizationException;
 import com.spaceora.exception.ResourceNotFoundException;
 import com.spaceora.space.dto.SpaceDto;
@@ -21,12 +22,15 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -41,11 +45,16 @@ class SpaceServiceTest {
     @Mock
     private UserRepository userRepository;
 
+    @Mock
+    private AvailabilityScheduleRepository scheduleRepository;
+
     private SpaceService spaceService;
 
     @BeforeEach
     void setUp() {
-        spaceService = new SpaceService(spaceRepository, spaceImageRepository, userRepository);
+        spaceService = new SpaceService(spaceRepository, spaceImageRepository, userRepository, scheduleRepository);
+        // Return empty schedule list for all spaces by default (lenient: not all tests need it)
+        lenient().when(scheduleRepository.findBySpaceId(anyLong())).thenReturn(List.of());
     }
 
     // ---- helpers ----

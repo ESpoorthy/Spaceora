@@ -1,5 +1,6 @@
 package com.spaceora.space.dto;
 
+import com.spaceora.availability.entity.AvailabilitySchedule;
 import com.spaceora.space.entity.Space;
 
 import java.math.BigDecimal;
@@ -22,9 +23,27 @@ public record SpaceDto(
         String createdAt
 ) {
 
+    /**
+     * Build a SpaceDto with an empty availability schedule.
+     * Use {@link #from(Space, List)} when the schedule is available.
+     */
     public static SpaceDto from(Space s) {
+        return from(s, List.of());
+    }
+
+    /**
+     * Build a SpaceDto and populate the availability schedule from the provided entities.
+     */
+    public static SpaceDto from(Space s, List<AvailabilitySchedule> schedules) {
         List<SpaceImageDto> imageDtos = s.getImages().stream()
                 .map(SpaceImageDto::from)
+                .toList();
+
+        List<AvailabilitySlotDto> scheduleDtos = schedules.stream()
+                .map(sc -> new AvailabilitySlotDto(
+                        sc.getDayOfWeek(),
+                        sc.getOpenTime().toString(),
+                        sc.getCloseTime().toString()))
                 .toList();
 
         return new SpaceDto(
@@ -40,7 +59,7 @@ public record SpaceDto(
                 s.getCapacity(),
                 s.isActive(),
                 imageDtos,
-                List.of(),
+                scheduleDtos,
                 s.getCreatedAt().toString()
         );
     }

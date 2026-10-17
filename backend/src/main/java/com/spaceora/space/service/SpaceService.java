@@ -1,5 +1,7 @@
 package com.spaceora.space.service;
 
+import com.spaceora.availability.entity.AvailabilitySchedule;
+import com.spaceora.availability.repository.AvailabilityScheduleRepository;
 import com.spaceora.exception.AuthorizationException;
 import com.spaceora.exception.ResourceNotFoundException;
 import com.spaceora.space.dto.*;
@@ -27,13 +29,16 @@ public class SpaceService {
     private final SpaceRepository spaceRepository;
     private final SpaceImageRepository spaceImageRepository;
     private final UserRepository userRepository;
+    private final AvailabilityScheduleRepository scheduleRepository;
 
     public SpaceService(SpaceRepository spaceRepository,
                         SpaceImageRepository spaceImageRepository,
-                        UserRepository userRepository) {
+                        UserRepository userRepository,
+                        AvailabilityScheduleRepository scheduleRepository) {
         this.spaceRepository = spaceRepository;
         this.spaceImageRepository = spaceImageRepository;
         this.userRepository = userRepository;
+        this.scheduleRepository = scheduleRepository;
     }
 
     public Page<SpaceSummaryDto> search(String city,
@@ -71,7 +76,8 @@ public class SpaceService {
     public SpaceDto getById(Long id) {
         Space space = spaceRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Space not found: " + id));
-        return SpaceDto.from(space);
+        List<AvailabilitySchedule> schedules = scheduleRepository.findBySpaceId(id);
+        return SpaceDto.from(space, schedules);
     }
 
     public SpaceDto create(SpaceRequestDto dto, String ownerEmail) {
@@ -94,7 +100,8 @@ public class SpaceService {
                 .build();
 
         Space saved = spaceRepository.save(space);
-        return SpaceDto.from(saved);
+        List<AvailabilitySchedule> schedules = scheduleRepository.findBySpaceId(saved.getId());
+        return SpaceDto.from(saved, schedules);
     }
 
     public SpaceDto update(Long spaceId, SpaceUpdateRequestDto dto, String ownerEmail) {
@@ -134,7 +141,8 @@ public class SpaceService {
         }
 
         Space saved = spaceRepository.save(space);
-        return SpaceDto.from(saved);
+        List<AvailabilitySchedule> schedules = scheduleRepository.findBySpaceId(saved.getId());
+        return SpaceDto.from(saved, schedules);
     }
 
     public void delete(Long spaceId, String callerEmail) {
@@ -157,7 +165,7 @@ public class SpaceService {
         User user = loadUserByEmail(ownerEmail);
         return spaceRepository.findByOwnerId(user.getId())
                 .stream()
-                .map(SpaceDto::from)
+                .map(s -> SpaceDto.from(s, scheduleRepository.findBySpaceId(s.getId())))
                 .toList();
     }
 

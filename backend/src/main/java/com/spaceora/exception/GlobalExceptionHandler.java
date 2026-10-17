@@ -22,6 +22,24 @@ public class GlobalExceptionHandler {
         return new ErrorResponse(status, error, message, Instant.now().toString());
     }
 
+    @ExceptionHandler(BookingConflictException.class)
+    public ResponseEntity<ErrorResponse> handleBookingConflict(BookingConflictException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(build(409, "Conflict", ex.getMessage()));
+    }
+
+    @ExceptionHandler(BookingValidationException.class)
+    public ResponseEntity<ErrorResponse> handleBookingValidation(BookingValidationException ex) {
+        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
+                .body(build(422, "Unprocessable Entity", ex.getMessage()));
+    }
+
+    @ExceptionHandler(InvalidStatusTransitionException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidStatusTransition(InvalidStatusTransitionException ex) {
+        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
+                .body(build(422, "Unprocessable Entity", ex.getMessage()));
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleValidation(MethodArgumentNotValidException ex) {
         String msg = ex.getBindingResult().getFieldErrors().stream()
