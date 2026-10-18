@@ -29,8 +29,8 @@ function ExplorePage() {
   // Map the current filter UI state to the backend query params it supports.
   // date/time/amenities remain in the UI for design continuity but are not
   // backend-filterable in this release.
-  function buildParams() {
-    const params = { size: 50, sort: SORT_MAP[sort] || 'id,asc' }
+  function buildParams(sortValue = sort) {
+    const params = { size: 50, sort: SORT_MAP[sortValue] || 'id,asc' }
     if (city) params.city = city
     if (type) params.type = type
     if (capacity) params.minCapacity = Number(capacity)
@@ -39,25 +39,7 @@ function ExplorePage() {
     return params
   }
 
-  async function fetchSpaces(params) {
-    setLoading(true)
-    setError('')
-    try {
-      const data = await workspaceService.search(params)
-      const content = Array.isArray(data) ? data : (data.content || [])
-      setResults(content.map(mapSpaceSummary))
-    } catch (err) {
-      setError(err.response?.data?.message || 'Couldn’t load spaces right now. Please try again.')
-      setResults([])
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  useEffect(() => { fetchSpaces(buildParams()) /* eslint-disable-line react-hooks/exhaustive-deps */ }, [])
-
-  function apply(event) {
-    event.preventDefault()
+  function buildQueryParams(sortValue = sort) {
     const next = new URLSearchParams()
     if (city) next.set('city', city)
     if (date) next.set('date', date)
@@ -68,10 +50,39 @@ function ExplorePage() {
     if (maximum) next.set('maxPrice', maximum)
     if (capacity) next.set('minCapacity', capacity)
     if (amenities.length) next.set('amenities', amenities.join(','))
-    if (sort !== 'recommended') next.set('sort', sort)
-    setQuery(next)
+    if (sortValue !== 'recommended') next.set('sort', sortValue)
+    return next
+  }
+
+  async function fetchSpaces(params) {
+    setLoading(true)
+    setError('')
+    try {
+      const data = await workspaceService.search(params)
+      const content = Array.isArray(data) ? data : data?.content
+      if (!Array.isArray(content)) throw new Error('The listings service returned an invalid response.')
+      setResults(content.map(mapSpaceSummary))
+    } catch (err) {
+      setError(err.response?.data?.message || err.message || 'Couldn’t load spaces right now. Please try again.')
+      setResults([])
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => { fetchSpaces(buildParams()) /* eslint-disable-line react-hooks/exhaustive-deps */ }, [])
+
+  function apply(event) {
+    event.preventDefault()
+    setQuery(buildQueryParams())
     setFiltersOpen(false)
     fetchSpaces(buildParams())
+  }
+
+  function applySort(value) {
+    setSort(value)
+    setQuery(buildQueryParams(value))
+    fetchSpaces(buildParams(value))
   }
 
   function clear() {
@@ -87,7 +98,7 @@ function ExplorePage() {
   return <SiteLayout><main className="explore-page container-fluid"><div className="breadcrumb-line"><Link to="/">Home</Link><span>›</span><span>Explore spaces</span></div>
     <header className="explore-title"><span className="eyebrow">ROOM FOR WHAT’S NEXT</span><h1>A space for your next good idea.</h1><p>{city || 'Everywhere'} · {dateLabel} · {timeLabel} · {capacity ? `${capacity}+ guests` : 'Any group size'}</p></header>
     <div className="mobile-search-summary"><b>{city || 'Choose a city'}</b><span>{dateLabel} · {timeLabel} · {capacity ? `${capacity}+ guests` : 'Any size'}</span></div>
-    <div className="explore-toolbar-mobile"><button className="tag" onClick={() => setFiltersOpen(!filtersOpen)}>☷ Filters {filterCount ? `· ${filterCount}` : ''}</button><label className="tag">⌄ <select aria-label="Sort results" value={sort} onChange={(e) => setSort(e.target.value)}><option value="recommended">Recommended</option><option value="price-asc">Price: low to high</option><option value="price-desc">Price: high to low</option></select></label></div>
+    <div className="explore-toolbar-mobile"><button className="tag" onClick={() => setFiltersOpen(!filtersOpen)}>☷ Filters {filterCount ? `· ${filterCount}` : ''}</button><label className="tag">⌄ <select aria-label="Sort results" value={sort} onChange={(e) => applySort(e.target.value)}><option value="recommended">Recommended</option><option value="price-asc">Price: low to high</option><option value="price-desc">Price: high to low</option></select></label></div>
     <div className="explore-layout"><form className={`explore-sidebar surface ${filtersOpen ? 'mobile-open' : ''}`} onSubmit={apply}>
       <h2>Find your fit</h2><label className="filter-field"><span>City</span><input className="form-control" aria-label="City" value={city} onChange={(e)=>setCity(e.target.value)} placeholder="City or neighbourhood" /></label>
       <label className="filter-field"><span>Date</span><input className="form-control" aria-label="Date" type="date" value={date} onChange={(e)=>setDate(e.target.value)} /></label>
@@ -98,7 +109,7 @@ function ExplorePage() {
       <fieldset className="filter-group amenity-filter"><legend>Amenities</legend>{['Wi-Fi','Whiteboard','Projector','Parking'].map((item)=><label className="filter-radio" key={item}><input type="checkbox" checked={amenities.includes(item)} onChange={()=>toggleAmenity(item)} /><span>{item}</span></label>)}</fieldset>
       <button className="btn btn-primary w-100" type="submit">Apply filters</button><button className="btn btn-link reset-button w-100" type="button" onClick={clear}>Clear all</button>
     </form>
-    <section className="explore-results"><div className="results-desktop-bar"><b>{loading ? 'Searching…' : `${results.length} ${results.length===1?'space':'spaces'}`}</b><label>⌄ <select aria-label="Sort results" value={sort} onChange={(e) => setSort(e.target.value)}><option value="recommended">Sort: Recommended</option><option value="price-asc">Price: low to high</option><option value="price-desc">Price: high to low</option></select></label></div><div className="active-filter-tags">{capacity&&<span className="tag active">{capacity}+ guests　×</span>}{amenities.map((item)=><span className="tag active" key={item}>{item}　×</span>)}<button onClick={clear}>Clear all</button></div>
+    <section className="explore-results"><div className="results-desktop-bar"><b>{loading ? 'Searching…' : `${results.length} ${results.length===1?'space':'spaces'}`}</b><label>⌄ <select aria-label="Sort results" value={sort} onChange={(e) => applySort(e.target.value)}><option value="recommended">Sort: Recommended</option><option value="price-asc">Price: low to high</option><option value="price-desc">Price: high to low</option></select></label></div><div className="active-filter-tags">{capacity&&<span className="tag active">{capacity}+ guests　×</span>}{amenities.map((item)=><span className="tag active" key={item}>{item}　×</span>)}<button onClick={clear}>Clear all</button></div>
       {loading ? <div className="empty-state surface" role="status"><span className="spinner-border" />Searching spaces…</div>
        : error ? <div className="empty-state surface"><span>⚠</span><h2>Couldn’t load spaces.</h2><p>{error}</p><button className="btn btn-primary" onClick={() => fetchSpaces(buildParams())}>Try again</button></div>
        : results.length ? <div className="row g-3 explore-card-grid">{results.map((space)=><div className="col-12 col-xl-6" key={space.id}><WorkspaceCard space={space} /></div>)}</div>
