@@ -1,31 +1,60 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { SiteLayout } from '../components/SiteLayout'
-import { DevPreviewNotice } from '../components/FeatureNotice'
 import WorkspaceCard from '../components/WorkspaceCard'
-import { spaces, spaceTypes } from '../data/spaces'
+import { spaceTypes } from '../data/spaces'
+import { workspaceService, mapSpaceSummary } from '../api/marketplaceService'
 
 const defaultDate = '2026-10-18'
+const SORT_MAP = { recommended: 'id,asc', 'price-asc': 'hourlyRate,asc', 'price-desc': 'hourlyRate,desc' }
+
 function ExplorePage() {
   const [query, setQuery] = useSearchParams()
-  const [city, setCity] = useState(query.get('city') || 'Hyderabad')
+  const [city, setCity] = useState(query.get('city') || '')
   const [date, setDate] = useState(query.get('date') || defaultDate)
   const [start, setStart] = useState(query.get('from') || '10:00')
   const [end, setEnd] = useState(query.get('until') || '12:00')
   const [type, setType] = useState(query.get('type') || '')
   const [minimum, setMinimum] = useState(query.get('minPrice') || '0')
   const [maximum, setMaximum] = useState(query.get('maxPrice') || '2000')
-  const [capacity, setCapacity] = useState(query.get('minCapacity') || '8')
+  const [capacity, setCapacity] = useState(query.get('minCapacity') || '')
   const [amenities, setAmenities] = useState(query.get('amenities')?.split(',') || ['Wi-Fi'])
   const [sort, setSort] = useState(query.get('sort') || 'recommended')
   const [filtersOpen, setFiltersOpen] = useState(false)
 
-  const visibleSpaces = useMemo(() => {
-    const items = spaces.filter((space) => (!city || `${space.city} ${space.area}`.toLowerCase().includes(city.toLowerCase())) && (!type || space.type === type) && (!capacity || space.capacity >= Number(capacity)) && space.price >= Number(minimum || 0) && (!maximum || space.price <= Number(maximum)) && amenities.every((amenity) => space.amenities.includes(amenity)))
-    if (sort === 'price-asc') items.sort((a,b) => a.price - b.price)
-    if (sort === 'price-desc') items.sort((a,b) => b.price - a.price)
-    return items
-  }, [city, type, capacity, minimum, maximum, amenities, sort])
+  const [results, setResults] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
+
+  // Map the current filter UI state to the backend query params it supports.
+  // date/time/amenities remain in the UI for design continuity but are not
+  // backend-filterable in this release.
+  function buildParams() {
+    const params = { size: 50, sort: SORT_MAP[sort] || 'id,asc' }
+    if (city) params.city = city
+    if (type) params.type = type
+    if (capacity) params.minCapacity = Number(capacity)
+    if (minimum && Number(minimum) > 0) params.minPrice = Number(minimum)
+    if (maximum) params.maxPrice = Number(maximum)
+    return params
+  }
+
+  async function fetchSpaces(params) {
+    setLoading(true)
+    setError('')
+    try {
+      const data = await workspaceService.search(params)
+      const content = Array.isArray(data) ? data : (data.content || [])
+      setResults(content.map(mapSpaceSummary))
+    } catch (err) {
+      setError(err.response?.data?.message || 'Couldn’t load spaces right now. Please try again.')
+      setResults([])
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => { fetchSpaces(buildParams()) /* eslint-disable-line react-hooks/exhaustive-deps */ }, [])
 
   function apply(event) {
     event.preventDefault()
@@ -42,8 +71,13 @@ function ExplorePage() {
     if (sort !== 'recommended') next.set('sort', sort)
     setQuery(next)
     setFiltersOpen(false)
+    fetchSpaces(buildParams())
   }
-  function clear() { setCity(''); setDate(''); setStart(''); setEnd(''); setType(''); setMinimum('0'); setMaximum(''); setCapacity(''); setAmenities([]); setSort('recommended'); setQuery({}) }
+
+  function clear() {
+    setCity(''); setDate(''); setStart(''); setEnd(''); setType(''); setMinimum('0'); setMaximum(''); setCapacity(''); setAmenities([]); setSort('recommended'); setQuery({})
+    fetchSpaces({ size: 50, sort: 'id,asc' })
+  }
   function toggleAmenity(amenity) { setAmenities((current) => current.includes(amenity) ? current.filter((item) => item !== amenity) : [...current, amenity]) }
   const dateLabel = date === defaultDate ? 'Sun, 18 Oct' : date ? `${date.slice(8)} ${['','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][Number(date.slice(5,7))]} ${date.slice(0,4)}` : 'Any date'
   const formatTime = (value) => { if (!value) return ''; const [hour, minute] = value.split(':').map(Number); return `${hour % 12 || 12}${minute ? `:${String(minute).padStart(2,'0')}` : ''} ${hour < 12 ? 'AM' : 'PM'}` }
@@ -64,8 +98,11 @@ function ExplorePage() {
       <fieldset className="filter-group amenity-filter"><legend>Amenities</legend>{['Wi-Fi','Whiteboard','Projector','Parking'].map((item)=><label className="filter-radio" key={item}><input type="checkbox" checked={amenities.includes(item)} onChange={()=>toggleAmenity(item)} /><span>{item}</span></label>)}</fieldset>
       <button className="btn btn-primary w-100" type="submit">Apply filters</button><button className="btn btn-link reset-button w-100" type="button" onClick={clear}>Clear all</button>
     </form>
-    <section className="explore-results"><div className="results-desktop-bar"><b>{visibleSpaces.length} sample {visibleSpaces.length===1?'space':'spaces'}</b><label>⌄ <select aria-label="Sort results" value={sort} onChange={(e)=>setSort(e.target.value)}><option value="recommended">Sort: Recommended</option><option value="price-asc">Price: low to high</option><option value="price-desc">Price: high to low</option></select></label></div><div className="active-filter-tags">{capacity&&<span className="tag active">{capacity}+ guests　×</span>}{amenities.map((item)=><span className="tag active" key={item}>{item}　×</span>)}<button onClick={clear}>Clear all</button></div><div className="availability-preview">Availability can’t be checked until the workspace and availability API is available.</div><DevPreviewNotice />
-      {visibleSpaces.length?<div className="row g-3 explore-card-grid">{visibleSpaces.map((space)=><div className="col-12 col-xl-6" key={space.id}><WorkspaceCard space={space}/></div>)}</div>:<div className="empty-state surface"><span>⌕</span><h2>No sample spaces match those filters.</h2><p>Try a different city, capacity or budget.</p><button className="btn btn-primary" onClick={clear}>Clear filters</button></div>}
+    <section className="explore-results"><div className="results-desktop-bar"><b>{loading ? 'Searching…' : `${results.length} ${results.length===1?'space':'spaces'}`}</b><label>⌄ <select aria-label="Sort results" value={sort} onChange={(e) => setSort(e.target.value)}><option value="recommended">Sort: Recommended</option><option value="price-asc">Price: low to high</option><option value="price-desc">Price: high to low</option></select></label></div><div className="active-filter-tags">{capacity&&<span className="tag active">{capacity}+ guests　×</span>}{amenities.map((item)=><span className="tag active" key={item}>{item}　×</span>)}<button onClick={clear}>Clear all</button></div>
+      {loading ? <div className="empty-state surface" role="status"><span className="spinner-border" />Searching spaces…</div>
+       : error ? <div className="empty-state surface"><span>⚠</span><h2>Couldn’t load spaces.</h2><p>{error}</p><button className="btn btn-primary" onClick={() => fetchSpaces(buildParams())}>Try again</button></div>
+       : results.length ? <div className="row g-3 explore-card-grid">{results.map((space)=><div className="col-12 col-xl-6" key={space.id}><WorkspaceCard space={space} /></div>)}</div>
+       : <div className="empty-state surface"><span>⌕</span><h2>No spaces match those filters.</h2><p>Try a different city, capacity or budget.</p><button className="btn btn-primary" onClick={clear}>Clear filters</button></div>}
     </section></div></main></SiteLayout>
 }
 export default ExplorePage

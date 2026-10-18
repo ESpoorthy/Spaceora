@@ -75,7 +75,6 @@ class AvailabilityServiceTest {
 
     @Test
     void addBlockedPeriod_noOverlap_succeeds() {
-        when(spaceRepo.existsById(1L)).thenReturn(true);
         when(spaceRepo.findById(1L)).thenReturn(Optional.of(space(1L, 10L)));
         when(userRepo.findByEmail("owner@test.com")).thenReturn(Optional.of(owner(10L, "owner@test.com")));
         when(blockedPeriodRepo.findOverlapping(eq(1L), any(), any())).thenReturn(List.of());
@@ -96,7 +95,6 @@ class AvailabilityServiceTest {
 
     @Test
     void addBlockedPeriod_overlapsExisting_throws() {
-        when(spaceRepo.existsById(1L)).thenReturn(true);
         when(spaceRepo.findById(1L)).thenReturn(Optional.of(space(1L, 10L)));
         when(userRepo.findByEmail("owner@test.com")).thenReturn(Optional.of(owner(10L, "owner@test.com")));
 
@@ -116,7 +114,6 @@ class AvailabilityServiceTest {
 
     @Test
     void addBlockedPeriod_nonOwner_throws() {
-        when(spaceRepo.existsById(1L)).thenReturn(true);
         when(spaceRepo.findById(1L)).thenReturn(Optional.of(space(1L, 10L)));
         User other = User.builder().id(99L).email("other@test.com").passwordHash("x")
                 .firstName("X").lastName("Y").role(Role.OWNER).build();
@@ -133,7 +130,6 @@ class AvailabilityServiceTest {
 
     @Test
     void addBlockedPeriod_endBeforeStart_throws() {
-        when(spaceRepo.existsById(1L)).thenReturn(true);
         when(spaceRepo.findById(1L)).thenReturn(Optional.of(space(1L, 10L)));
         when(userRepo.findByEmail("owner@test.com")).thenReturn(Optional.of(owner(10L, "owner@test.com")));
 
@@ -185,7 +181,6 @@ class AvailabilityServiceTest {
 
     @Test
     void setSchedule_closeBeforeOpen_throws() {
-        when(spaceRepo.existsById(1L)).thenReturn(true);
         when(spaceRepo.findById(1L)).thenReturn(Optional.of(space(1L, 10L)));
         when(userRepo.findByEmail("owner@test.com")).thenReturn(Optional.of(owner(10L, "owner@test.com")));
 
@@ -201,7 +196,6 @@ class AvailabilityServiceTest {
 
     @Test
     void setSchedule_duplicateDays_throws() {
-        when(spaceRepo.existsById(1L)).thenReturn(true);
         when(spaceRepo.findById(1L)).thenReturn(Optional.of(space(1L, 10L)));
         when(userRepo.findByEmail("owner@test.com")).thenReturn(Optional.of(owner(10L, "owner@test.com")));
 
@@ -218,7 +212,6 @@ class AvailabilityServiceTest {
 
     @Test
     void removeBlockedPeriod_wrongSpace_throws() {
-        when(spaceRepo.existsById(1L)).thenReturn(true);
         when(spaceRepo.findById(1L)).thenReturn(Optional.of(space(1L, 10L)));
         when(userRepo.findByEmail("owner@test.com")).thenReturn(Optional.of(owner(10L, "owner@test.com")));
 

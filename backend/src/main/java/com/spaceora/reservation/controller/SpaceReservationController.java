@@ -1,5 +1,6 @@
 package com.spaceora.reservation.controller;
 
+import com.spaceora.exception.BookingValidationException;
 import com.spaceora.reservation.dto.ReservationDto;
 import com.spaceora.reservation.entity.ReservationStatus;
 import com.spaceora.reservation.service.ReservationService;
@@ -33,6 +34,13 @@ public class SpaceReservationController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size,
             Authentication auth) {
+
+        if (page < 0) {
+            throw new BookingValidationException("page must be greater than or equal to 0");
+        }
+        if (size < 1) {
+            throw new BookingValidationException("size must be greater than 0");
+        }
 
         ReservationStatus statusFilter = null;
         if (status != null && !status.isBlank()) {

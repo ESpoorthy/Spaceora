@@ -87,7 +87,7 @@ class ReservationServiceTest {
     }
 
     private void mockValidSlot(Long spaceId, Space sp) {
-        when(spaceRepo.findById(spaceId)).thenReturn(Optional.of(sp));
+        when(spaceRepo.findByIdForUpdate(spaceId)).thenReturn(Optional.of(sp));
         // 2099-06-17 is a Tuesday → ISO=2 → domDay=1
         when(availabilityService.findScheduleForDate(eq(spaceId), any(LocalDate.class)))
                 .thenReturn(Optional.of(schedule(1, LocalTime.of(8, 0), LocalTime.of(20, 0))));
@@ -110,7 +110,7 @@ class ReservationServiceTest {
 
         Reservation saved = pendingReservation(100L, 1L, 1L);
         when(reservationRepo.save(any())).thenReturn(saved);
-        when(spaceRepo.findById(1L)).thenReturn(Optional.of(sp));
+        when(spaceRepo.findByIdForUpdate(1L)).thenReturn(Optional.of(sp));
 
         ReservationRequestDto dto = new ReservationRequestDto(1L,
                 FUTURE_START.toString(), FUTURE_END.toString(), null);
@@ -125,7 +125,7 @@ class ReservationServiceTest {
         User cust = customer(1L, "cust@test.com");
         when(userRepo.findByEmail("cust@test.com")).thenReturn(Optional.of(cust));
         Space sp = space(1L, 10L, new BigDecimal("15.00"));
-        when(spaceRepo.findById(1L)).thenReturn(Optional.of(sp));
+        when(spaceRepo.findByIdForUpdate(1L)).thenReturn(Optional.of(sp));
 
         ReservationRequestDto dto = new ReservationRequestDto(1L,
                 "2020-01-01T09:00:00Z", "2020-01-01T11:00:00Z", null);
@@ -140,7 +140,7 @@ class ReservationServiceTest {
         User cust = customer(1L, "cust@test.com");
         Space sp = space(1L, 10L, new BigDecimal("15.00"));
         when(userRepo.findByEmail("cust@test.com")).thenReturn(Optional.of(cust));
-        when(spaceRepo.findById(1L)).thenReturn(Optional.of(sp));
+        when(spaceRepo.findByIdForUpdate(1L)).thenReturn(Optional.of(sp));
         when(availabilityService.findScheduleForDate(eq(1L), any())).thenReturn(Optional.empty());
 
         ReservationRequestDto dto = new ReservationRequestDto(1L,
@@ -156,7 +156,7 @@ class ReservationServiceTest {
         User cust = customer(1L, "cust@test.com");
         Space sp = space(1L, 10L, new BigDecimal("15.00"));
         when(userRepo.findByEmail("cust@test.com")).thenReturn(Optional.of(cust));
-        when(spaceRepo.findById(1L)).thenReturn(Optional.of(sp));
+        when(spaceRepo.findByIdForUpdate(1L)).thenReturn(Optional.of(sp));
         // Schedule only 10:00-12:00 but booking is 09:00-11:00
         when(availabilityService.findScheduleForDate(eq(1L), any()))
                 .thenReturn(Optional.of(schedule(1, LocalTime.of(10, 0), LocalTime.of(12, 0))));
@@ -174,7 +174,7 @@ class ReservationServiceTest {
         User cust = customer(1L, "cust@test.com");
         Space sp = space(1L, 10L, new BigDecimal("15.00"));
         when(userRepo.findByEmail("cust@test.com")).thenReturn(Optional.of(cust));
-        when(spaceRepo.findById(1L)).thenReturn(Optional.of(sp));
+        when(spaceRepo.findByIdForUpdate(1L)).thenReturn(Optional.of(sp));
         when(availabilityService.findScheduleForDate(eq(1L), any()))
                 .thenReturn(Optional.of(schedule(1, LocalTime.of(8, 0), LocalTime.of(20, 0))));
         when(availabilityService.findOverlappingBlockedPeriods(eq(1L), any(), any()))
@@ -194,7 +194,7 @@ class ReservationServiceTest {
         User cust = customer(1L, "cust@test.com");
         Space sp = space(1L, 10L, new BigDecimal("15.00"));
         when(userRepo.findByEmail("cust@test.com")).thenReturn(Optional.of(cust));
-        when(spaceRepo.findById(1L)).thenReturn(Optional.of(sp));
+        when(spaceRepo.findByIdForUpdate(1L)).thenReturn(Optional.of(sp));
         when(availabilityService.findScheduleForDate(eq(1L), any()))
                 .thenReturn(Optional.of(schedule(1, LocalTime.of(8, 0), LocalTime.of(20, 0))));
         when(availabilityService.findOverlappingBlockedPeriods(eq(1L), any(), any()))
