@@ -1,5 +1,6 @@
 package com.spaceora.space.controller;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.spaceora.user.entity.Role;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,8 +13,11 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
+import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.StreamSupport;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -81,6 +85,18 @@ class SpaceControllerIntegrationTest {
         );
     }
 
+    private void createSpace(String token, String name, String city) throws Exception {
+        Map<String, Object> payload = new HashMap<>(buildSpacePayload());
+        payload.put("name", name);
+        payload.put("city", city);
+
+        mockMvc.perform(post("/api/spaces")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(payload)))
+                .andExpect(status().isCreated());
+    }
+
     @BeforeEach
     void setUp() throws Exception {
         customerToken = registerAndLogin(uniqueEmail(), Role.CUSTOMER);
@@ -94,6 +110,46 @@ class SpaceControllerIntegrationTest {
                 .andExpect(status().isOk());
     }
 
+    @Test
+    void getSpaces_withoutCityFilter_returnsSpacesAcrossCitiesAndCityFilterMatches() throws Exception {
+        String suffix = UUID.randomUUID().toString();
+        String hyderabadName = "Multi-city Hyderabad " + suffix;
+        String bangaloreName = "Multi-city Bangalore " + suffix;
+        String londonName = "Multi-city London " + suffix;
+        createSpace(ownerToken, hyderabadName, "Hyderabad");
+        createSpace(ownerToken, bangaloreName, "Bangalore");
+        createSpace(ownerToken, londonName, "London");
+
+        MvcResult allCitiesResult = mockMvc.perform(get("/api/spaces")
+                        .param("page", "0")
+                        .param("size", "100"))
+                .andExpect(status().isOk())
+                .andReturn();
+        JsonNode allCities = objectMapper.readTree(allCitiesResult.getResponse().getContentAsString()).path("content");
+        var names = StreamSupport.stream(allCities.spliterator(), false)
+                .map(space -> space.path("name").asText())
+                .toList();
+        assertThat(names).contains(hyderabadName, bangaloreName, londonName);
+
+        MvcResult filteredResult = mockMvc.perform(get("/api/spaces")
+                        .param("city", "Hyderabad")
+                        .param("page", "0")
+                        .param("size", "100"))
+                .andExpect(status().isOk())
+                .andReturn();
+        JsonNode filteredSpaces = objectMapper.readTree(filteredResult.getResponse().getContentAsString()).path("content");
+        var filteredNames = StreamSupport.stream(filteredSpaces.spliterator(), false)
+                .map(space -> space.path("name").asText())
+                .toList();
+        var filteredCities = StreamSupport.stream(filteredSpaces.spliterator(), false)
+                .map(space -> space.path("city").asText())
+                .distinct()
+                .toList();
+
+        assertThat(filteredNames).contains(hyderabadName);
+        assertThat(filteredCities).containsExactly("Hyderabad");
+    }
+
     // (b) POST /api/spaces with OWNER JWT and valid body returns 201
     @Test
     void createSpace_asOwner_returns201() throws Exception {
@@ -102,6 +158,77 @@ class SpaceControllerIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(buildSpacePayload())))
                 .andExpect(status().isCreated());
+    }
+
+    @Test
+    void createAndUpdateSpace_preservesDecimalHourlyRates() throws Exception {
+        Map<String, Object> createPayload = new HashMap<>(buildSpacePayload());
+        createPayload.put("hourlyRate", new BigDecimal("1234.56"));
+
+        MvcResult createResult = mockMvc.perform(post("/api/spaces")
+                        .header("Authorization", "Bearer " + ownerToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(createPayload)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.hourlyRate").value(1234.56))
+                .andReturn();
+
+        Map<?, ?> created = objectMapper.readValue(createResult.getResponse().getContentAsString(), Map.class);
+        Number spaceId = (Number) created.get("id");
+        Map<String, Object> updatePayload = Map.of("hourlyRate", new BigDecimal("1357.89"));
+
+        mockMvc.perform(put("/api/spaces/" + spaceId)
+                        .header("Authorization", "Bearer " + ownerToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updatePayload)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.hourlyRate").value(1357.89));
+
+        mockMvc.perform(get("/api/spaces/" + spaceId))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.hourlyRate").value(1357.89));
+    }
+
+    @Test
+    void listReservations_invalidPagination_returnsClientValidationResponse() throws Exception {
+        MvcResult createResult = mockMvc.perform(post("/api/spaces")
+                        .header("Authorization", "Bearer " + ownerToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(buildSpacePayload())))
+                .andExpect(status().isCreated())
+                .andReturn();
+
+        Map<?, ?> created = objectMapper.readValue(createResult.getResponse().getContentAsString(), Map.class);
+        Number spaceId = (Number) created.get("id");
+
+        mockMvc.perform(get("/api/spaces/" + spaceId + "/reservations")
+                        .header("Authorization", "Bearer " + ownerToken)
+                        .param("page", "-1")
+                        .param("size", "100"))
+                .andExpect(status().isUnprocessableEntity())
+                .andExpect(jsonPath("$.status").value(422))
+                .andExpect(jsonPath("$.error").value("Unprocessable Entity"))
+                .andExpect(jsonPath("$.message").value("page must be greater than or equal to 0"));
+
+        mockMvc.perform(get("/api/spaces/" + spaceId + "/reservations")
+                        .header("Authorization", "Bearer " + ownerToken)
+                        .param("size", "0"))
+                .andExpect(status().isUnprocessableEntity())
+                .andExpect(jsonPath("$.message").value("size must be greater than 0"));
+
+        mockMvc.perform(get("/api/spaces/" + spaceId + "/reservations")
+                        .header("Authorization", "Bearer " + ownerToken)
+                        .param("size", "-1"))
+                .andExpect(status().isUnprocessableEntity())
+                .andExpect(jsonPath("$.message").value("size must be greater than 0"));
+
+        mockMvc.perform(get("/api/spaces/" + spaceId + "/reservations")
+                        .header("Authorization", "Bearer " + ownerToken)
+                        .param("page", "0")
+                        .param("size", "101"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.pageable.pageNumber").value(0))
+                .andExpect(jsonPath("$.pageable.pageSize").value(100));
     }
 
     // (c) POST /api/spaces with CUSTOMER JWT returns 403

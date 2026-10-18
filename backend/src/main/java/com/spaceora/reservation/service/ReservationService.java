@@ -60,7 +60,9 @@ public class ReservationService {
             throw new AuthorizationException("Only customers can create reservations");
         }
 
-        Space space = spaceRepo.findById(dto.spaceId())
+        // Lock the stable parent row: an empty overlap query cannot lock a row
+        // that does not exist yet, so simultaneous first bookings would race.
+        Space space = spaceRepo.findByIdForUpdate(dto.spaceId())
                 .orElseThrow(() -> new ResourceNotFoundException("Space not found: " + dto.spaceId()));
 
         if (!space.isActive()) {
@@ -108,7 +110,7 @@ public class ReservationService {
                     "Requested time overlaps a blocked period");
         }
 
-        // --- Concurrent-safe overlap check with pessimistic lock ---
+        // The space row remains locked through this transaction and reservation insert.
         List<Reservation> overlapping = reservationRepo.findOverlappingActiveWithLock(
                 space.getId(), start, end);
         if (!overlapping.isEmpty()) {
