@@ -1,118 +1,155 @@
 # Spaceora — Find Your Space. Make Room for Great Ideas.
 
-**Spaceora** is a full-stack workspace discovery and booking platform that helps students, freelancers, professionals and businesses find suitable spaces for studying, coworking, meetings and training sessions.
+**Languages & Technologies:** Java 21 · JavaScript · HTML5 · CSS3 · SQL · React · Spring Boot · PostgreSQL
 
-Developed by **Team OrbitX**, Spaceora connects customers looking for productive spaces with owners who want to manage their listings, availability and reservations through a unified platform.
+**Team OrbitX** | Full-Stack Development Project
 
-> Discover the right space. Manage your workspace. Make every hour count.
+Spaceora is a full-stack space discovery and booking platform that helps users discover, compare, and reserve coworking spaces, study rooms, meeting rooms, and training halls. It also enables space owners to manage their listings and, as the booking module is completed, handle availability and reservations through a centralized platform.
 
 ---
 
-## Overview
+## 📌 Project Overview
 
-Finding and booking a suitable workspace often involves searching across multiple platforms, comparing prices, checking availability and coordinating with space owners. Spaceora aims to simplify this process through a single, intuitive platform.
+Finding a suitable workspace can be time-consuming when information about facilities, pricing, availability, and booking options is spread across different platforms.
 
-Customers can explore workspaces, compare details and manage their accounts, while owners can create and manage listings. The planned booking workflow will allow customers to request reservations and owners to confirm or reject them.
+Spaceora aims to simplify this process by providing a centralized, user-friendly platform where customers can explore spaces and space owners can manage their properties.
 
-## Key Features
+## 🎯 Objectives
 
-### Customer Experience
-- **Workspace Discovery:** Browse coworking spaces, study rooms, meeting rooms and training halls.
-- **Search and Filters:** Find spaces using available search criteria, sorting and filters.
-- **Workspace Details:** Explore descriptions, locations, capacity, amenities and hourly pricing.
-- **Secure Authentication:** Register, log in and manage personal profile information.
-- **Saved Spaces:** Access the saved-space interface.
-- **Booking Interface:** Review booking details and access booking-related screens.
+- Provide an easy-to-use platform for discovering different types of spaces.
+- Allow customers to search, filter, sort, and view space details.
+- Enable space owners to create and manage their listings.
+- Implement secure authentication and role-based access control.
+- Support availability management and reservation workflows.
+- Build a responsive interface backed by a reliable REST API.
 
-### Space Owner Experience
-- **Listing Management:** Create, view, update and delete eligible workspace listings.
-- **Ownership Protection:** Owners can manage only their own spaces.
-- **Owner Dashboard:** Access the workspace management interface.
-- **Availability and Reservations:** Planned for the upcoming availability and booking implementation.
+## ✨ Key Features
 
-### Platform and Security
-- RESTful APIs built with Spring Boot.
-- JWT-based authentication and Spring Security authorisation.
+### Customer Features
+- User registration and login.
+- Profile management.
+- Browse and search available space listings.
+- Filter and sort spaces using supported criteria.
+- View individual space details.
+- Save spaces and review booking information in the frontend.
+
+### Space Owner Features
+- Create new space listings.
+- Update and manage owned spaces.
+- View and manage owner listings.
+- Enforce ownership-based permissions.
+
+### Security Features
+- JWT-based authentication.
 - BCrypt password hashing.
-- PostgreSQL persistence with Flyway database migrations.
-- Server-side request validation and consistent error responses.
-- Automated backend tests for authentication, workspace management and access control.
+- Role-based authorization.
+- Protected API endpoints.
+- Server-side ownership validation.
+
+### Planned / In-Progress Booking Features
+- Space availability schedules.
+- Blocked dates and time periods.
+- Reservation creation and cancellation.
+- Owner approval or rejection of reservations.
+- Prevention of overlapping bookings.
+
+*Booking and availability features should be considered complete only after their backend implementation and tests have been verified.*
 
 ---
 
-## Technology Stack
+## 🛠️ Languages and Technology Stack
 
-| Layer | Technologies |
+| Category | Technologies |
 |---|---|
-| Frontend | HTML5, CSS3, JavaScript, React |
-| UI and Styling | Bootstrap 5, reusable React components |
-| Frontend Tooling | Vite, React Router, Axios |
-| Backend | Java 21, Spring Boot, Spring MVC |
+| Programming Languages | Java 21, JavaScript, SQL |
+| Frontend | React.js, Vite, HTML5, CSS3 |
+| UI Framework | Bootstrap 5 |
+| Frontend Routing | React Router |
+| API Communication | Axios, REST APIs |
+| Backend | Spring Boot, Spring MVC |
 | Security | Spring Security, JWT, BCrypt |
 | Persistence | Spring Data JPA, Hibernate |
 | Database | PostgreSQL |
 | Database Migrations | Flyway |
 | Build Tool | Maven |
-| Testing | JUnit, Spring Boot Test, MockMvc, H2 for applicable tests |
-| Design | Figma |
-| Version Control | Git and GitHub |
+| Version Control | Git, GitHub |
+| Development & Testing Tools | Postman, Docker, IDEs |
+| AI-Assisted Development | Kiro, OpenAI Codex, Google Antigravity |
 
 ---
 
-## System Architecture
+## 🎨 Graphical User Interface (GUI)
 
-Spaceora follows a layered client-server architecture.
+Spaceora uses a responsive React-based interface designed to make space discovery and booking straightforward.
 
-```text
-                 CUSTOMER / SPACE OWNER
-                           |
-                           v
-                React + Bootstrap Frontend
-                           |
-                     Axios / REST
-                           |
-                           v
-                 Spring Boot Backend
-                           |
-             +-------------+-------------+
-             |             |             |
-             v             v             v
-         Controllers    Services     Security
-             |             |        JWT / Roles
-             +-------------+-------------+
-                           |
-                           v
-                Spring Data JPA / Hibernate
-                           |
-                           v
-                     PostgreSQL
-                           |
-                           v
-                    Flyway Migrations
+The frontend includes the following screens and experiences:
+
+- **Home Page:** Introduction to the platform and navigation to space discovery.
+- **Explore Spaces:** Browse, search, filter, and sort space listings.
+- **Space Details:** View the information available for an individual space.
+- **Authentication:** Login and registration interfaces.
+- **User Profile:** View and update profile information.
+- **Saved Spaces:** Access saved workspace listings.
+- **Booking Experience:** Review booking details and display booking-related states.
+- **My Bookings:** Booking overview interface.
+- **Owner Dashboard:** Owner-facing space management screens.
+
+The interface includes responsive layouts and user feedback for loading, empty, validation, and access-denied states where implemented.
+
+**Frontend technologies:** React.js, JavaScript, Vite, Bootstrap 5, React Router, and Axios.
+
+---
+
+## 🏗️ System Architecture
+
+Spaceora follows a client-server architecture. The React frontend communicates with the Spring Boot backend through REST APIs. The backend handles business logic, authentication, authorization, and persistence through PostgreSQL.
+
+### Graphic System Architecture
+
+```mermaid
+flowchart TB
+    U["Customer / Space Owner / Admin"]
+    subgraph FRONTEND["Presentation Layer"]
+        UI["React.js User Interface"]
+        ROUTER["React Router"]
+        API["Axios API Client"]
+        UI --> ROUTER
+        ROUTER --> API
+    end
+    subgraph BACKEND["Application Layer"]
+        REST["Spring Boot REST API"]
+        SEC["Spring Security + JWT"]
+        SERVICE["Business Logic and Validation"]
+        JPA["Spring Data JPA / Hibernate"]
+        REST --> SEC
+        SEC --> SERVICE
+        SERVICE --> JPA
+    end
+    subgraph DATA["Data Layer"]
+        DB[("PostgreSQL Database")]
+        FLYWAY["Flyway Database Migrations"]
+        JPA --> DB
+        FLYWAY --> DB
+    end
+    U --> UI
+    API <-->|"HTTP / JSON"| REST
 ```
 
-### Backend Design
+### Architecture Components
 
-The backend separates HTTP controllers, business services, repositories, entities, DTOs, security configuration and exception handling.
-
-This separation supports maintainability, testing and future extension of the workspace availability and reservation features.
+1. **Presentation Layer:** React components provide the customer and owner interface.
+2. **API Communication Layer:** Axios sends HTTP requests to the backend REST endpoints.
+3. **Security Layer:** Spring Security and JWT protect authorized operations.
+4. **Business Layer:** Spring Boot handles validation, permissions, and application rules.
+5. **Persistence Layer:** Spring Data JPA and Hibernate manage database operations.
+6. **Database Layer:** PostgreSQL stores persistent application data, while Flyway manages database schema migrations.
 
 ---
 
-## Project Structure
+## 🧰 Project Structure
 
 ```text
 Spaceora/
-├── backend/
-│   ├── src/
-│   │   ├── main/
-│   │   │   ├── java/
-│   │   │   └── resources/
-│   │   │       ├── application.yml
-│   │   │       └── db/migration/
-│   │   └── test/
-│   ├── pom.xml
-│   └── mvnw
 ├── frontend/
 │   ├── src/
 │   │   ├── api/
@@ -120,34 +157,36 @@ Spaceora/
 │   │   ├── pages/
 │   │   └── ...
 │   ├── package.json
-│   └── ...
-├── docs/
-│   ├── requirements.md
-│   ├── design.md
-│   ├── api-contract.md
-│   ├── data-dictionary.md
-│   ├── testing-plan.md
-│   └── tasks.md
+│   └── vite.config.js
+│
+├── backend/
+│   ├── src/
+│   │   ├── main/
+│   │   │   ├── java/
+│   │   │   └── resources/
+│   │   └── test/
+│   └── pom.xml
+│
 ├── docker-compose.yml
-├── .gitignore
-└── README.md
+├── README.md
+└── ...
 ```
 
-*The directory structure above describes the intended organisation; consult the repository for the exact current file names.*
+*The structure above is illustrative. Check the repository for the exact package names, files, and directory layout.*
 
 ---
 
-## Getting Started
+## 🚀 Getting Started
 
 ### Prerequisites
 
-Install the following software:
+Install the following tools before running the project:
 
-- Git
-- Java Development Kit 21
-- Node.js and npm, compatible with the frontend configuration
-- PostgreSQL, or Docker Desktop with Docker Compose
-- A code editor such as VS Code, Kiro
+- Java 21 or a compatible JDK.
+- Node.js and npm.
+- PostgreSQL, or Docker if using the project's Docker Compose configuration.
+- Git.
+- Maven, or use the included Maven wrapper if available.
 
 ### 1. Clone the Repository
 
@@ -158,35 +197,43 @@ cd Spaceora
 
 ### 2. Configure the Database
 
-Use either a local PostgreSQL installation or the repository's Docker Compose configuration.
+Create a PostgreSQL database and configure the backend connection properties using the settings expected by the application.
 
-For Docker-based development, inspect `docker-compose.yml` and start the configured database service:
+Provide the required database credentials and JWT secret through environment variables or an appropriate local configuration. Do not commit real passwords, tokens, or secrets to GitHub.
 
-```bash
-docker compose up -d
-```
-
-For a local PostgreSQL installation, create the development database and configure the database connection according to `backend/src/main/resources/application.yml`.
-
-Configure all required environment variables locally. In particular, provide a secure `JWT_SECRET` for the backend. Never commit real credentials or secrets to GitHub.
+If the project includes a Docker Compose file, inspect its configuration and follow the repository's database startup instructions.
 
 ### 3. Start the Backend
 
-Open a terminal in the project root:
+From the backend directory:
 
 ```bash
 cd backend
-./mvnw clean test
+```
+
+On Windows, if the Maven wrapper is present:
+
+```powershell
+.\mvnw.cmd spring-boot:run
+```
+
+On macOS/Linux, if the wrapper is present:
+
+```bash
 ./mvnw spring-boot:run
 ```
 
-On Windows, use `mvnw.cmd` instead of `./mvnw`.
+Alternatively, if Maven is installed:
 
-Use the database profile and environment variables specified by the application configuration. Flyway manages database schema migrations during application startup.
+```bash
+mvn spring-boot:run
+```
+
+Ensure the database is accessible and the required environment variables are configured before starting the application.
 
 ### 4. Start the Frontend
 
-Open another terminal:
+Open a separate terminal:
 
 ```bash
 cd frontend
@@ -194,79 +241,36 @@ npm install
 npm run dev
 ```
 
-Configure `VITE_API_BASE_URL` to point to the running backend API, using the URL and port configured for your environment.
-
-Open the local URL printed by Vite in your browser.
-
-**Note:** These are the standard development commands. Confirm the database configuration and required environment variables in the current repository before starting the application.
+Open the local URL printed by Vite in the terminal.
 
 ---
 
-## API Overview
+## 🔌 API Overview
 
-The following endpoints are implemented in the documented M1 and M2 backend scope.
+The following endpoints represent the authentication and space-management API functionality implemented in the project.
 
 | Method | Endpoint | Purpose |
 |---|---|---|
-| POST | `/api/auth/register` | Register a customer or permitted owner |
-| POST | `/api/auth/login` | Authenticate and receive a JWT |
-| GET | `/api/users/me` | Retrieve the authenticated user's profile |
-| PUT | `/api/users/me` | Update the authenticated user's profile |
-| GET | `/api/spaces` | Search and retrieve paginated workspace listings |
-| GET | `/api/spaces/{id}` | Retrieve workspace details |
-| POST | `/api/spaces` | Create a workspace as an authorised owner |
-| PUT | `/api/spaces/{id}` | Update an owned workspace |
-| DELETE | `/api/spaces/{id}` | Delete a workspace according to authorisation rules |
-| GET | `/api/spaces/owner/me` | Retrieve the authenticated owner's listings |
+| POST | `/api/auth/register` | Register a user |
+| POST | `/api/auth/login` | Authenticate a user |
+| GET | `/api/users/me` | Retrieve the current user's profile |
+| PUT | `/api/users/me` | Update the current user's profile |
+| GET | `/api/spaces` | Browse and search space listings |
+| GET | `/api/spaces/{id}` | Retrieve space details |
+| POST | `/api/spaces` | Create a space listing |
+| PUT | `/api/spaces/{id}` | Update an owned space |
+| DELETE | `/api/spaces/{id}` | Delete a space subject to permissions |
+| GET | `/api/spaces/owner/me` | Retrieve the current owner's listings |
 
-Availability and reservation endpoints will be documented here once their implementation is complete and verified. Refer to `docs/api-contract.md` for the authoritative request and response definitions.
+**Authorization:** Public endpoints can be accessed without a token where configured. Protected operations require valid authentication and the appropriate role and ownership permissions.
 
----
-
-## Development Roadmap
-
-Spaceora is being developed incrementally to maintain code quality and protect existing functionality.
-
-- **M0 — Project Foundation:** Project scaffolding, PostgreSQL configuration, Flyway migrations and health checks.
-- **M1 — Authentication:** Registration, login, JWT authentication, profile management and security tests.
-- **M2 — Space Management:** Workspace CRUD, search, filtering, pagination and owner access controls.
-- **M3 — Availability and Blocked Periods:** Weekly schedules, unavailable periods and availability retrieval.
-- **M4 — Reservation Management:** Booking requests, conflict prevention, owner approval or rejection, customer booking history and cancellation.
-
-The target for the core MVP is completion of M4, followed by frontend integration, end-to-end verification and demonstration.
-
-### Current Limitations
-
-The frontend includes screens for features whose backend implementation may still be pending. Depending on the current integration state, some workspace or booking views may use development fixtures or display unavailable states.
-
-Real payment processing, payment confirmation, production image uploads and external map integrations are not part of the current core MVP scope.
-
-A feature should be considered complete only after its backend implementation, relevant tests and frontend integration have been verified.
+*Verify endpoint paths against the latest backend controllers before relying on this table. Availability and reservation endpoints should be added once implemented and verified.*
 
 ---
 
-## Testing and Quality Assurance
+## 🧪 Testing
 
-The project uses automated tests to validate business logic, API behaviour and security boundaries.
-
-Backend verification includes:
-
-- Authentication and registration tests.
-- Password hashing and credential validation.
-- JWT-protected endpoint tests.
-- Role and workspace ownership checks.
-- Workspace creation, updates and deletion.
-- Request validation and error handling.
-- Regression testing for existing functionality.
-
-Run the backend tests with:
-
-```bash
-cd backend
-./mvnw clean test
-```
-
-Run the frontend checks with:
+### Frontend
 
 ```bash
 cd frontend
@@ -274,24 +278,46 @@ npm run lint
 npm run build
 ```
 
-PostgreSQL-specific migration and concurrency behaviour should be verified against PostgreSQL. H2-based tests do not independently establish PostgreSQL integration correctness.
+### Backend
+
+From the backend directory, use the Maven wrapper or installed Maven:
+
+```bash
+mvn test
+```
+
+Or on Windows, if the wrapper exists:
+
+```powershell
+.\mvnw.cmd test
+```
+
+Run the application with the configured database to verify database connectivity, migrations, authentication, and API behavior.
+
+Tests that require Docker or Testcontainers may be skipped or fail if the necessary runtime is unavailable. Report passed, failed, and skipped tests separately.
 
 ---
 
-## UI/UX Design
+## 🗺️ Development Roadmap
 
-The application follows the Spaceora designs created in Figma, with a responsive layout for desktop and mobile experiences.
+| Milestone | Scope |
+|---|---|
+| M0 | Project foundation, database configuration, and migrations |
+| M1 | Authentication, JWT security, and user profile management |
+| M2 | Space listing and owner space management |
+| M3 | Availability schedules and blocked periods |
+| M4 | Reservation workflows and booking management |
 
-**Figma design:** https://www.figma.com/design/jmILFgP2XqbqcjRCrXiA6W/Untitled
+The current completion status of each milestone should be verified against the latest code and test results.
 
-The design covers workspace discovery, workspace details, authentication, customer booking screens and owner management interfaces.
+
+---
+
+## 🎨 Design and Repository
+
+- **GitHub Repository:** https://github.com/ESpoorthy/Spaceora
+- **Figma Design:** https://www.figma.com/design/jmILFgP2XqbqcjRCrXiA6W/Untitled
 
 ---
 
-## Team OrbitX
-
-Spaceora is developed collaboratively by **Team OrbitX**, combining frontend development, backend engineering, database design, API integration and testing.
-
-Our goal is to deliver a secure and usable workspace marketplace with a polished interface and a reliable booking workflow.
-
----
+*Spaceora — Find Your Space. Make Room for Great Ideas.*
