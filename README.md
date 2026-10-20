@@ -312,6 +312,51 @@ The current completion status of each milestone should be verified against the l
 
 
 ---
+👥 Team OrbitX — Team Members
+
+Spaceora is developed by Team OrbitX.
+
+S. No.
+
+Student Name
+
+Role in Project
+
+1
+
+G. Shamithri
+
+UI/UX Design
+
+2
+
+K. Sahithi Rithvika
+
+GitHub Repository Management and Documentation
+
+3
+
+E. Manusree
+
+Testing and Error Fixing
+
+4
+
+E. Sai Spoorthy
+
+UI/UX, Integration, and Final Testing
+
+5
+
+D. Srija
+
+Project Documentation
+
+6
+
+K. Harihansika
+
+Booking Functionality and Confirmation Implementation
 
 ## 🎨 Design and Repository
 
