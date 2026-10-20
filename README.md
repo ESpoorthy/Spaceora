@@ -147,7 +147,7 @@ Install the following software:
 - Java Development Kit 21
 - Node.js and npm, compatible with the frontend configuration
 - PostgreSQL, or Docker Desktop with Docker Compose
-- A code editor such as VS Code, Kiro or IntelliJ IDEA
+- A code editor such as VS Code, Kiro
 
 ### 1. Clone the Repository
 
@@ -282,7 +282,7 @@ PostgreSQL-specific migration and concurrency behaviour should be verified again
 
 The application follows the Spaceora designs created in Figma, with a responsive layout for desktop and mobile experiences.
 
-**Figma design:** https://www.figma.com/design/jmILFgP2XqbqcjRCrXiA6W/Untitled)
+**Figma design:** https://www.figma.com/design/jmILFgP2XqbqcjRCrXiA6W/Untitled
 
 The design covers workspace discovery, workspace details, authentication, customer booking screens and owner management interfaces.
 
@@ -295,7 +295,3 @@ Spaceora is developed collaboratively by **Team OrbitX**, combining frontend dev
 Our goal is to deliver a secure and usable workspace marketplace with a polished interface and a reliable booking workflow.
 
 ---
-
-## License
-
-A license has not yet been specified. Please add an appropriate `LICENSE` file before distributing the project under an open-source license.
