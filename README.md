@@ -4,6 +4,8 @@
 
 **Team OrbitX** | Full-Stack Development Project
 
+**Live application:** [https://spaceora-alpha.vercel.app](https://spaceora-alpha.vercel.app)
+
 Spaceora is a full-stack space discovery and booking platform that helps users discover, compare, and reserve coworking spaces, study rooms, meeting rooms, and training halls. It also enables space owners to manage their listings and, as the booking module is completed, handle availability and reservations through a centralized platform.
 
 ---
